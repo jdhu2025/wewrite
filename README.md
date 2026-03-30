@@ -134,6 +134,14 @@ pip install -r requirements.txt
 
 **OpenClaw**：`cp -r wewrite /path/to/openclaw/skills/wewrite`
 
+在当前这套 `openclaw-docker` 环境里，推荐直接：
+
+```bash
+mkdir -p /config/.openclaw/workspace/skills/wewrite
+# skill 外壳放在 workspace/skills/wewrite
+# 真实工程保持在 /config/.openclaw/workspace/wewrite
+```
+
 ### 配置（可选）
 
 ```bash
@@ -264,6 +272,13 @@ python3 scripts/fetch_hotspots.py --limit 20
 
 # SEO 分析
 python3 scripts/seo_keywords.py --json "AI大模型" "科技股"
+
+# OpenClaw 本地联调入口
+python3 openclaw_skill.py help
+python3 openclaw_skill.py hotspots
+python3 openclaw_skill.py preview
+python3 openclaw_skill.py publish
+python3 openclaw_skill.py smoke
 ```
 
 发布到公众号草稿箱前有两个前置条件：
