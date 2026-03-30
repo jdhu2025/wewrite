@@ -11,9 +11,11 @@ Usage:
 import argparse
 import sys
 import webbrowser
+import tempfile
 from pathlib import Path
 
 import yaml
+from PIL import Image, ImageDraw
 
 from converter import WeChatConverter, preview_html
 from theme import load_theme, list_themes
@@ -36,6 +38,33 @@ def load_config() -> dict:
             with open(p, "r", encoding="utf-8") as f:
                 return yaml.safe_load(f) or {}
     return {}
+
+
+def create_fallback_cover(title: str) -> str:
+    """Create a simple local fallback cover image for WeChat draft publishing."""
+    width, height = 900, 383
+    image = Image.new("RGB", (width, height), "#0f172a")
+    draw = ImageDraw.Draw(image)
+
+    # Build a clean, text-free cover so publishing does not depend on local fonts.
+    draw.rectangle((0, 0, width, int(height * 0.32)), fill="#1d4ed8")
+    draw.rectangle((0, int(height * 0.32), width, int(height * 0.68)), fill="#0f172a")
+    draw.rectangle((0, int(height * 0.68), width, height), fill="#111827")
+
+    draw.rounded_rectangle((48, 52, 280, 104), radius=20, fill="#dbeafe")
+    draw.rounded_rectangle((48, 132, width - 48, 166), radius=16, fill="#334155")
+    draw.rounded_rectangle((48, 188, width - 140, 222), radius=16, fill="#1e293b")
+    draw.rounded_rectangle((48, 244, width - 220, 278), radius=16, fill="#1e40af")
+    draw.rounded_rectangle((48, 300, 220, 334), radius=16, fill="#93c5fd")
+
+    # Add a subtle right-side accent block.
+    draw.rounded_rectangle((width - 230, 108, width - 64, height - 58), radius=28, fill="#2563eb")
+    draw.rounded_rectangle((width - 200, 136, width - 96, height - 86), radius=20, fill="#60a5fa")
+
+    safe_name = "".join(ch if ch.isalnum() else "-" for ch in title.lower()).strip("-") or "wewrite-cover"
+    output_path = Path(tempfile.gettempdir()) / f"{safe_name[:40]}-cover.png"
+    image.save(output_path, format="PNG")
+    return str(output_path)
 
 
 def cmd_preview(args):
@@ -112,16 +141,18 @@ def cmd_publish(args):
         else:
             print(f"Warning: image not found: {img_src} (searched {md_dir})")
 
-    # Upload cover image if provided
-    thumb_media_id = None
-    if args.cover:
-        print(f"Uploading cover: {args.cover}")
-        thumb_media_id = upload_thumb(token, args.cover)
-        print(f"  -> media_id: {thumb_media_id}")
-
     # Create draft
     title = args.title or result.title or Path(args.input).stem
     digest = result.digest
+    cover_path = args.cover
+    if not cover_path:
+        cover_path = create_fallback_cover(title)
+        print(f"Generated fallback cover: {cover_path}")
+
+    print(f"Uploading cover: {cover_path}")
+    thumb_media_id = upload_thumb(token, cover_path)
+    print(f"  -> media_id: {thumb_media_id}")
+
     draft = create_draft(
         access_token=token,
         title=title,
