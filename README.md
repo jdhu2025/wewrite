@@ -152,6 +152,15 @@ cp config.example.yaml config.yaml
 
 如果环境里已经装了 `bb-browser`，并且 `style.yaml` 里配置了内容方向，`scripts/fetch_hotspots.py` 会自动把热点源从默认的中文公开热榜扩展到更贴近主题的 X / Reddit / Hacker News / Product Hunt / 雪球等来源。
 
+现在还支持仓库内自定义 `bb-sites/` 覆盖层：
+- `wewrite` 会优先加载仓库里的 `bb-sites/` 适配器
+- 你可以把自己写的 `jin10/newsflash.js`、`polymarket/markets.js`、`kalshi/markets.js` 直接放进仓库
+- 如果想让 `bb-browser site ...` CLI 也识别这些适配器，再执行一次：
+
+```bash
+python3 scripts/install_bb_sites.py
+```
+
 ## 快速开始
 
 ```
@@ -179,6 +188,7 @@ wewrite/
 ├── scripts/                  # 数据采集 + 优化
 │   ├── fetch_hotspots.py       # 中文公开热榜 + bb-browser 扩展热点抓取
 │   ├── browser_http.py         # 复用 bb-sites 适配器的 OpenClaw 浏览器运行层
+│   ├── install_bb_sites.py     # 把仓库里的自定义 bb-sites 同步到运行时目录
 │   ├── seo_keywords.py         # SEO 关键词分析
 │   ├── fetch_stats.py          # 微信文章数据回填
 │   ├── build_playbook.py       # 从历史文章生成 Playbook
@@ -196,6 +206,7 @@ wewrite/
 │   └── themes/                 # 16 套排版主题（含暗黑模式）
 │
 ├── personas/                 # 5 套写作人格预设（含朱雀实测数据）
+├── bb-sites/                 # 仓库内 bb-browser 适配器覆盖层（可扩金十/预测市场）
 │
 ├── references/               # Agent 按需加载
 │   ├── writing-guide.md        # 写作规范 + 7 层去 AI 痕迹 + 自检清单

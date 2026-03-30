@@ -13,7 +13,8 @@ BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
 CONFIG_PATH = BASE_DIR / "config.yaml"
 STYLE_PATH = BASE_DIR / "style.yaml"
-PYTHON_BIN = sys.executable or "/usr/bin/python3"
+VENV_PYTHON = BASE_DIR / ".venv" / "bin" / "python"
+PYTHON_BIN = str(VENV_PYTHON) if VENV_PYTHON.exists() else (sys.executable or "/usr/bin/python3")
 
 
 def run_command(args: list[str], timeout: int = 300) -> subprocess.CompletedProcess[str]:

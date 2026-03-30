@@ -12,7 +12,9 @@ from urllib.request import Request, urlopen
 
 DEFAULT_BROWSER_HTTP_URL = "http://127.0.0.1:18791"
 DEFAULT_OPENCLAW_CONFIG = Path("/config/.openclaw/openclaw.json")
-DEFAULT_ADAPTER_ROOT = Path("/config/.bb-browser/bb-sites")
+REPO_ADAPTER_ROOT = Path(__file__).resolve().parents[1] / "bb-sites"
+INSTALLED_ADAPTER_ROOT = Path("/config/.bb-browser/bb-sites")
+DEFAULT_ADAPTER_ROOTS = (REPO_ADAPTER_ROOT, INSTALLED_ADAPTER_ROOT)
 
 
 class BrowserAutomationError(RuntimeError):
@@ -156,20 +158,28 @@ class BrowserHttpClient:
 
 
 class BrowserAdapterRunner:
-    def __init__(self, client: BrowserHttpClient, adapter_root: Path = DEFAULT_ADAPTER_ROOT) -> None:
+    def __init__(
+        self,
+        client: BrowserHttpClient,
+        adapter_roots: Optional[Iterable[Path]] = None,
+    ) -> None:
         self.client = client
-        self.adapter_root = adapter_root
+        self.adapter_roots = tuple(adapter_roots or DEFAULT_ADAPTER_ROOTS)
         self._cache: Dict[str, str] = {}
 
     def _adapter_path(self, site: str) -> Path:
-        return self.adapter_root / f"{site}.js"
+        relative_path = Path(f"{site}.js")
+        for root in self.adapter_roots:
+            candidate = root / relative_path
+            if candidate.exists():
+                return candidate
+        roots = ", ".join(str(root) for root in self.adapter_roots)
+        raise BrowserAutomationError(f"Adapter not found: {site} (searched: {roots})")
 
     def _load_function_source(self, site: str) -> str:
         if site in self._cache:
             return self._cache[site]
         path = self._adapter_path(site)
-        if not path.exists():
-            raise BrowserAutomationError(f"Adapter not found: {site}")
         source = path.read_text(encoding="utf-8")
         marker = "async function(args)"
         start = source.find(marker)
