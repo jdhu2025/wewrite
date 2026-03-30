@@ -19,7 +19,7 @@
 
 | 能力 | 说明 | 实现 |
 |------|------|------|
-| 热点抓取 | 微博 + 头条 + 百度实时热搜 | `scripts/fetch_hotspots.py` |
+| 热点抓取 | 微博 + 头条 + 百度实时热搜 + `bb-browser` 扩展源（X / Reddit / Hacker News / Product Hunt / 雪球） | `scripts/fetch_hotspots.py` |
 | SEO 评分 | 百度 + 360 搜索量化评分 | `scripts/seo_keywords.py` |
 | 选题生成 | 10 选题 × 3 维度评分 + 历史去重 | `references/topic-selection.md` |
 | 素材采集 | WebSearch 真实数据/引述/案例 | SKILL.md Step 3b |
@@ -142,6 +142,8 @@ cp config.example.yaml config.yaml
 
 填入微信公众号 `appid`/`secret`（推送需要）和图片 API key（生图需要）。不配也能用——自动降级为本地 HTML + 输出图片提示词。
 
+如果环境里已经装了 `bb-browser`，并且 `style.yaml` 里配置了内容方向，`scripts/fetch_hotspots.py` 会自动把热点源从默认的中文公开热榜扩展到更贴近主题的 X / Reddit / Hacker News / Product Hunt / 雪球等来源。
+
 ## 快速开始
 
 ```
@@ -167,7 +169,8 @@ wewrite/
 ├── requirements.txt
 │
 ├── scripts/                  # 数据采集 + 优化
-│   ├── fetch_hotspots.py       # 多平台热点抓取
+│   ├── fetch_hotspots.py       # 中文公开热榜 + bb-browser 扩展热点抓取
+│   ├── browser_http.py         # 复用 bb-sites 适配器的 OpenClaw 浏览器运行层
 │   ├── seo_keywords.py         # SEO 关键词分析
 │   ├── fetch_stats.py          # 微信文章数据回填
 │   ├── build_playbook.py       # 从历史文章生成 Playbook

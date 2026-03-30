@@ -86,6 +86,8 @@ python3 -c "import markdown, bs4, cssutils, requests, yaml, pygments, PIL" 2>&1
 python3 {skill_dir}/scripts/fetch_hotspots.py --limit 30
 ```
 
+如果运行环境已经装了 `bb-browser`，并且 `style.yaml` 有明确 `topics`，该脚本会自动把热点源从微博 / 头条 / 百度扩到更匹配方向的 X、Reddit、雪球、Hacker News、Product Hunt 等来源。
+
 **降级**：脚本报错 → WebSearch "今日热点 {topics第一个垂类}"
 
 **2b. 历史去重 + SEO**：
