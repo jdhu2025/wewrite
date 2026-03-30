@@ -247,6 +247,10 @@ python3 {skill_dir}/toolkit/cli.py publish {markdown} --cover {cover} --theme {t
 python3 {skill_dir}/toolkit/cli.py preview {markdown} --theme {theme} --no-open -o {output}.html
 ```
 
+发布前确认：
+- `mp.weixin.qq.com -> 设置与开发 -> 基本配置 -> IP 白名单` 已加入当前执行环境出口 IP
+- 当前环境能连通 `api.weixin.qq.com:443`；如果有代理，代理需要允许该域名的 HTTPS 隧道
+
 ---
 
 ### Step 8: 收尾

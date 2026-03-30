@@ -266,6 +266,10 @@ python3 scripts/fetch_hotspots.py --limit 20
 python3 scripts/seo_keywords.py --json "AI大模型" "科技股"
 ```
 
+发布到公众号草稿箱前有两个前置条件：
+- 公众号后台 `设置与开发 -> 基本配置 -> IP 白名单` 必须包含当前执行环境的出口 IP，否则会返回 `errcode=40164`
+- 当前执行环境必须能正常访问 `https://api.weixin.qq.com`；如果走代理，代理也要允许 `CONNECT api.weixin.qq.com:443`
+
 ## License
 
 MIT
